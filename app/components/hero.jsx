@@ -80,7 +80,7 @@ export default function NocturneHero({ data }) {
         top: "20%", right: hasPhoto ? "36%" : "15%",
         width: "600px", height: "600px", borderRadius: "50%",
         background: `radial-gradient(circle, ${GOLD}14 0%, transparent 70%)`,
-        filter: "blur(80px)", pointerEvents: "none",
+        pointerEvents: "none",
       }} />
 
       {/* Curtains — zIndex: 30, below preview chrome (z-50) */}
@@ -280,11 +280,7 @@ export default function NocturneHero({ data }) {
         onClick={() => scrollTo("about")}
       >
         <span style={{ fontSize: "8.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(200,148,58,0.4)" }}>Scroll</span>
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ repeat: Infinity, duration: 2.2 }}
-          style={{ width: "1px", height: "28px", background: `linear-gradient(to bottom, ${GOLD}50, transparent)` }}
-        />
+        <div style={{ width: "1px", height: "28px", background: `linear-gradient(to bottom, ${GOLD}50, transparent)` }} />
       </motion.div>
     </section>
   );
