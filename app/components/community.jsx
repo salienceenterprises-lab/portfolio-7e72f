@@ -1,151 +1,108 @@
 "use client";
-import React from "react";
 import { motion } from "framer-motion";
-import { FaExternalLinkAlt } from "react-icons/fa";
+import { FaBolt, FaExternalLinkAlt } from "react-icons/fa";
 
-const GOLD = "#c8943a";
-const GOLD_L = "#e0b256";
-
-export default function NocturneCommunity({ data }) {
-  const list = data?.community || data?.volunteering || data?.involvement || [];
-  if (!list.length) return null;
+export default function PortfolioCommunity({ data }) {
+  if (!data?.community?.length) return null;
 
   return (
-    <section id="community" style={{
-      background: "#080807",
-      borderTop: "1px solid #1e1c19",
-      position: "relative", overflow: "hidden",
-    }}>
-      <style>{`
-        @media (max-width: 767px) {
-          .noc-community-inner { padding: 4rem 1.5rem !important; }
-          .noc-community-grid { grid-template-columns: 1fr !important; }
-        }
-      `}</style>
+    <section id="community" className="relative py-28 px-6 overflow-hidden bg-[#050505]">
 
-      <div style={{
-        position: "absolute", top: "-1rem", left: "2rem",
-        fontSize: "200px", fontWeight: 900, lineHeight: 1,
-        color: "transparent",
-        WebkitTextStroke: "1px rgba(255,255,255,0.025)",
-        pointerEvents: "none", userSelect: "none",
-      }}>06</div>
+      {/* Ambient */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute bottom-1/3 left-1/3 w-[500px] h-[400px] rounded-full" style={{ background: "radial-gradient(ellipse, rgba(37,99,235,0.05), transparent 70%)" }} />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.025)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.025)_1px,transparent_1px)] bg-[size:48px_48px]" />
+      </div>
 
-      <div className="noc-community-inner" style={{ maxWidth: "1400px", margin: "0 auto", padding: "8rem 3rem" }}>
+      <div className="max-w-5xl mx-auto relative z-10">
+
+        {/* Section label */}
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
-          style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4rem" }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-3 mb-3"
         >
-          <div style={{ width: "28px", height: "1.5px", background: GOLD }} />
-          <span style={{ fontSize: "9.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: GOLD }}>
-            Community
-          </span>
+          <span className="text-blue-400/40 font-black text-xs tracking-widest select-none">{"//"}</span>
+          <span className="text-[10px] font-black tracking-[0.35em] uppercase text-blue-400/80">06 — Impact</span>
+          <div className="flex-1 h-px bg-gradient-to-r from-blue-500/20 to-transparent max-w-[80px]" />
         </motion.div>
 
-        <div
-          className="noc-community-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(min(320px, 100%), 1fr))",
-            gap: "1px",
-            background: "#1e1c19",
-          }}
+        <motion.h2
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.05 }}
+          className="text-4xl sm:text-6xl font-black tracking-tighter text-white mb-4 uppercase"
         >
-          {list.map((item, i) => {
-            const title        = item.title       || item.role         || item.name         || item.position || "";
-            const organization = item.organization || item.company      || item.employer     || "";
-            const period       = item.period       || item.duration     || item.years        || item.date || "";
-            const description  = item.description  || item.achievements || item.impact       || "";
-            const link         = item.link         || item.url          || item.website      || "";
+          Community<span className="text-blue-400">.</span>
+        </motion.h2>
 
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.07 }}
-                style={{
-                  background: "#080807",
-                  padding: "2.5rem",
-                  position: "relative",
-                  transition: "background 0.25s ease",
-                }}
-                onMouseEnter={(e) => { e.currentTarget.style.background = "#0d0c0a"; }}
-                onMouseLeave={(e) => { e.currentTarget.style.background = "#080807"; }}
-              >
-                {/* Index marker */}
-                <div style={{
-                  fontSize: "9px", fontWeight: 800,
-                  textTransform: "uppercase", letterSpacing: "0.25em",
-                  color: "#2a2825", marginBottom: "1.2rem",
-                }}>
-                  {String(i + 1).padStart(2, "0")}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="text-white/30 text-sm mb-16 max-w-sm"
+        >
+          Giving back, building up, leaving things better.
+        </motion.p>
+
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {data.community.map((item, index) => (
+            <motion.div
+              key={index}
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.08 }}
+              whileHover={{ y: -5 }}
+              className="group relative bg-blue-500/[0.03] border border-blue-500/15 p-6 overflow-hidden hover:border-blue-500/45 hover:shadow-[0_16px_50px_rgba(59,130,246,0.12)] transition-all duration-400"
+            >
+              {/* Corner bracket — top left */}
+              <div className="absolute top-0 left-0 w-5 h-5 border-t-2 border-l-2 border-blue-500/0 group-hover:border-blue-500/70 transition-colors duration-400" />
+              {/* Corner bracket — bottom right */}
+              <div className="absolute bottom-0 right-0 w-5 h-5 border-b-2 border-r-2 border-blue-500/0 group-hover:border-blue-500/70 transition-colors duration-400" />
+
+              {/* Electric flash icon */}
+              <div className="relative w-11 h-11 mb-5">
+                <div className="w-11 h-11 bg-blue-500/[0.1] border border-blue-500/25 flex items-center justify-center group-hover:border-blue-500/60 transition-colors duration-300">
+                  <FaBolt className="w-4 h-4 text-blue-400/80" />
                 </div>
+              </div>
 
-                <h3 style={{
-                  fontSize: "16px", fontWeight: 800,
-                  color: "#ede9e0", letterSpacing: "-0.02em",
-                  textTransform: "uppercase", marginBottom: "0.5rem",
-                }}>
-                  {title}
-                </h3>
-
-                {organization && (
-                  <div style={{
-                    fontSize: "11px", fontWeight: 600,
-                    color: GOLD, textTransform: "uppercase",
-                    letterSpacing: "0.15em", marginBottom: "0.75rem",
-                  }}>
-                    {organization}
-                  </div>
-                )}
-
-                {period && (
-                  <div style={{
-                    fontSize: "9px", fontWeight: 700,
-                    textTransform: "uppercase", letterSpacing: "0.2em",
-                    color: "#3a3835", marginBottom: "1rem",
-                  }}>
-                    {period}
-                  </div>
-                )}
-
-                {description && (
-                  <p style={{
-                    fontSize: "13px", color: "rgba(237,233,224,0.4)",
-                    lineHeight: 1.7, fontWeight: 300,
-                    marginBottom: link ? "1.2rem" : 0,
-                  }}>
-                    {description}
-                  </p>
-                )}
-
-                {link && (
+              <div className="flex items-start justify-between gap-2 mb-2">
+                <div>
+                  <h3 className="font-black text-white text-sm uppercase tracking-wide mb-0.5 group-hover:text-blue-200 transition-colors duration-300">
+                    {item.role}
+                  </h3>
+                  <p className="text-xs font-bold text-blue-400/70 uppercase tracking-wider">{item.organization}</p>
+                </div>
+                {item.link && (
                   <a
-                    href={link}
+                    href={item.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={{
-                      display: "inline-flex", alignItems: "center", gap: "6px",
-                      marginTop: "1rem",
-                      fontSize: "9px", fontWeight: 700,
-                      textTransform: "uppercase", letterSpacing: "0.18em",
-                      color: "rgba(200,148,58,0.5)",
-                      textDecoration: "none",
-                      transition: "color 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => e.currentTarget.style.color = GOLD}
-                    onMouseLeave={(e) => e.currentTarget.style.color = "rgba(200,148,58,0.5)"}
+                    className="text-white/20 hover:text-blue-400 transition-colors mt-0.5 flex-shrink-0"
                   >
-                    Visit <FaExternalLinkAlt size={8} />
+                    <FaExternalLinkAlt className="w-3.5 h-3.5" />
                   </a>
                 )}
-              </motion.div>
-            );
-          })}
+              </div>
+
+              {item.description && (
+                <p className="text-sm text-white/35 leading-relaxed mt-3">{item.description}</p>
+              )}
+
+              {/* Bottom indicator line */}
+              <motion.div
+                initial={{ scaleX: 0 }}
+                whileHover={{ scaleX: 1 }}
+                className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400/60 to-transparent origin-left"
+              />
+            </motion.div>
+          ))}
         </div>
       </div>
     </section>
