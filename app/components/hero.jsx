@@ -1,286 +1,223 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { motion, useAnimation } from "framer-motion";
+import { motion } from "framer-motion";
+import { FaDownload, FaEnvelope, FaChevronDown } from "react-icons/fa";
 
-const GOLD = "#c8943a";
-const GOLD_L = "#e0b256";
+export default function PortfolioHero({ data }) {
+  const firstName = data?.name?.split(" ")[0] || "";
+  const lastName = data?.name?.split(" ").slice(1).join(" ") || "";
 
-const slam = (delay = 0) => ({
-  initial: { y: 110, opacity: 0, skewY: 4 },
-  animate: {
-    y: 0, opacity: 1, skewY: 0,
-    transition: { type: "spring", stiffness: 260, damping: 18, mass: 1.1, delay },
-  },
-});
+  const scrollToContact = () =>
+    document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
 
-const slamFromLeft = (delay = 0) => ({
-  initial: { x: -120, opacity: 0 },
-  animate: {
-    x: 0, opacity: 1,
-    transition: { type: "spring", stiffness: 200, damping: 16, mass: 1.2, delay },
-  },
-});
-
-const slamFromRight = (delay = 0) => ({
-  initial: { x: 120, opacity: 0 },
-  animate: {
-    x: 0, opacity: 1,
-    transition: { type: "spring", stiffness: 200, damping: 16, mass: 1.2, delay },
-  },
-});
-
-export default function NocturneHero({ data }) {
-  const hasPhoto = !!data?.heroImageBase64;
-  const nameParts = (data?.name || "Portfolio").toUpperCase().split(" ");
-  const resumeSource = data?.resumeBase64 || data?.resume || data?.resumeUrl;
-
-  const leftCtrl = useAnimation();
-  const rightCtrl = useAnimation();
-  const [curtainDone, setCurtainDone] = useState(false);
-
-  useEffect(() => {
-    const run = async () => {
-      await new Promise((r) => setTimeout(r, 120));
-      await Promise.all([
-        leftCtrl.start({ x: "-100%", transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1] } }),
-        rightCtrl.start({ x: "100%",  transition: { duration: 0.55, ease: [0.76, 0, 0.24, 1] } }),
-      ]);
-      setCurtainDone(true);
-    };
-    run();
-  }, []);
-
-  const scrollTo = (id) => {
-    const el = document.getElementById(id);
-    if (el) window.scrollTo({ top: el.offsetTop - 70, behavior: "smooth" });
-  };
+  const stats = [
+    data?.experience?.length > 0 && { label: "Roles", value: data.experience.length },
+    data?.projects?.length > 0 && { label: "Projects", value: data.projects.length },
+    data?.skills?.length > 0 && { label: "Skills", value: data.skills.length },
+  ].filter(Boolean);
 
   return (
-    <section id="hero" style={{
-      minHeight: "100vh", background: "#0a0a0a",
-      position: "relative", overflow: "hidden",
-      display: "flex", alignItems: "center",
-    }}>
-      <style>{`
-        @media (max-width: 767px) {
-          .noc-hero-grid { grid-template-columns: 1fr !important; padding: 5rem 1.5rem 4rem !important; }
-          .noc-hero-photo { display: none !important; }
-        }
-      `}</style>
+    <section id="hero" className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#050505]">
 
-      {/* Background texture */}
-      <div style={{
-        position: "absolute", inset: 0, pointerEvents: "none",
-        backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 40px, rgba(255,255,255,0.012) 40px, rgba(255,255,255,0.012) 41px)`,
-      }} />
+      {/* Electric neon grid */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(59,130,246,0.035)_1px,transparent_1px),linear-gradient(90deg,rgba(59,130,246,0.035)_1px,transparent_1px)] bg-[size:48px_48px] pointer-events-none" />
 
-      {/* Gold ambient glow */}
-      <div style={{
-        position: "absolute",
-        top: "20%", right: hasPhoto ? "36%" : "15%",
-        width: "600px", height: "600px", borderRadius: "50%",
-        background: `radial-gradient(circle, ${GOLD}14 0%, transparent 70%)`,
-        pointerEvents: "none",
-      }} />
+      {/* Ambient blobs */}
+      <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full translate-x-1/3 -translate-y-1/3 pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(29,78,216,0.07), transparent 70%)" }} />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full -translate-x-1/3 translate-y-1/3 pointer-events-none" style={{ background: "radial-gradient(ellipse, rgba(30,58,138,0.1), transparent 70%)" }} />
 
-      {/* Curtains — zIndex: 30, below preview chrome (z-50) */}
-      <motion.div animate={leftCtrl} style={{
-        position: "absolute", top: 0, left: 0,
-        width: "50%", height: "100%", background: "#080808",
-        zIndex: 30, transformOrigin: "left center",
-      }} />
-      <motion.div animate={rightCtrl} style={{
-        position: "absolute", top: 0, right: 0,
-        width: "50%", height: "100%", background: "#080808",
-        zIndex: 30, transformOrigin: "right center",
-      }} />
-
-      {/* Main content */}
-      <div
-        className="noc-hero-grid"
-        style={{
-          maxWidth: "1400px", margin: "0 auto",
-          width: "100%", padding: "7rem 3rem 5rem",
-          display: "grid",
-          gridTemplateColumns: hasPhoto ? "1fr 420px" : "1fr",
-          alignItems: "center", gap: "4rem",
-          position: "relative", zIndex: 10,
-        }}
-      >
-        {/* Left: text */}
-        <div>
-          <motion.div {...slamFromLeft(0.65)} style={{ marginBottom: "2.5rem" }}>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "12px" }}>
-              <div style={{ width: "28px", height: "1.5px", background: GOLD }} />
-              <span style={{ fontSize: "9.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: GOLD }}>
-                {data?.title || "Developer & Designer"}
-              </span>
-            </div>
-          </motion.div>
-
-          <div style={{ marginBottom: "3rem", overflow: "hidden" }}>
-            {nameParts.map((word, i) => (
-              <div key={i} style={{ overflow: "hidden", lineHeight: 0.88 }}>
-                <motion.span
-                  {...slam(0.7 + i * 0.12)}
-                  style={{
-                    display: "block",
-                    fontSize: "clamp(3.2rem, 10vw, 10rem)",
-                    fontWeight: 900,
-                    letterSpacing: "-0.05em",
-                    color: i === nameParts.length - 1 ? GOLD_L : "#ede9e0",
-                    lineHeight: 0.9,
-                    textTransform: "uppercase",
-                    textShadow: i === nameParts.length - 1 ? `0 0 80px ${GOLD}44` : "none",
-                  }}
-                >
-                  {word}
-                </motion.span>
-              </div>
-            ))}
-          </div>
-
-          {(data?.sloganHeroSection || data?.bio) && (
-            <motion.p {...slamFromLeft(0.9 + nameParts.length * 0.1)} style={{
-              fontSize: "15px", fontWeight: 300,
-              color: "rgba(237,233,224,0.45)",
-              lineHeight: 1.85, maxWidth: "520px",
-              margin: "0 0 3.5rem",
-              borderLeft: `2px solid ${GOLD}50`,
-              paddingLeft: "1.4rem",
-            }}>
-              {data?.sloganHeroSection || data?.bio?.slice(0, 170) + "…"}
-            </motion.p>
-          )}
-
-          <motion.div
-            {...slamFromLeft(1.05 + nameParts.length * 0.1)}
-            style={{ display: "flex", flexWrap: "wrap", gap: "14px", alignItems: "center" }}
-          >
-            <button
-              onClick={() => scrollTo("contact")}
-              style={{
-                background: GOLD, color: "#080808",
-                border: "none", padding: "14px 36px",
-                fontSize: "10px", fontWeight: 900,
-                textTransform: "uppercase", letterSpacing: "0.22em",
-                cursor: "pointer", transition: "all 0.25s ease",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.background = GOLD_L; }}
-              onMouseLeave={(e) => { e.currentTarget.style.background = GOLD; }}
-            >
-              Get In Touch
-            </button>
-            <button
-              onClick={() => scrollTo("projects")}
-              style={{
-                background: "none", color: "#b8b4ac",
-                border: "1px solid #2a2825", padding: "14px 36px",
-                fontSize: "10px", fontWeight: 700,
-                textTransform: "uppercase", letterSpacing: "0.22em",
-                cursor: "pointer", transition: "all 0.25s ease",
-              }}
-              onMouseEnter={(e) => { e.currentTarget.style.borderColor = GOLD; e.currentTarget.style.color = GOLD; }}
-              onMouseLeave={(e) => { e.currentTarget.style.borderColor = "#2a2825"; e.currentTarget.style.color = "#b8b4ac"; }}
-            >
-              View Work
-            </button>
-            {resumeSource && (
-              <a
-                href={data?.resumeBase64 ? `data:application/pdf;base64,${data.resumeBase64}` : resumeSource}
-                download="Resume.pdf"
-                style={{
-                  fontSize: "10px", fontWeight: 600, color: "rgba(200,148,58,0.5)",
-                  textTransform: "uppercase", letterSpacing: "0.22em",
-                  textDecoration: "none", transition: "color 0.25s ease",
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.color = GOLD}
-                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(200,148,58,0.5)"}
-              >
-                Résumé ↓
-              </a>
-            )}
-          </motion.div>
-        </div>
-
-        {/* Right: photo */}
-        {hasPhoto && (
-          <motion.div
-            {...slamFromRight(0.8)}
-            className="noc-hero-photo"
-            style={{ position: "relative", alignSelf: "stretch" }}
-          >
-            <div style={{
-              position: "absolute", top: "16px", left: "16px",
-              right: "-16px", bottom: "-16px",
-              border: `1px solid ${GOLD}30`,
-              pointerEvents: "none", zIndex: 0,
-            }} />
-            <div style={{
-              position: "relative", zIndex: 1,
-              overflow: "hidden",
-              height: "100%", minHeight: "460px",
-              border: `1px solid ${GOLD}44`,
-            }}>
-              <img
-                src={data.heroImageBase64}
-                alt={data.name}
-                style={{
-                  width: "100%", height: "100%",
-                  objectFit: "cover", objectPosition: "center top",
-                  display: "block",
-                  filter: "brightness(0.9) saturate(0.85)",
-                }}
-              />
-              <div style={{
-                position: "absolute", inset: 0,
-                background: `linear-gradient(to top, ${GOLD}20 0%, transparent 50%)`,
-                pointerEvents: "none",
-              }} />
-            </div>
-          </motion.div>
-        )}
+      {/* Diagonal slash lines */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[-10%] right-[12%] w-px h-[130%] bg-gradient-to-b from-transparent via-blue-500/12 to-transparent"
+          style={{ transform: "rotate(12deg)" }} />
+        <div className="absolute top-[-10%] right-[18%] w-px h-[130%] bg-gradient-to-b from-transparent via-blue-400/6 to-transparent"
+          style={{ transform: "rotate(12deg)" }} />
+        <div className="absolute top-[-10%] right-[24%] w-px h-[130%] bg-gradient-to-b from-transparent via-blue-500/4 to-transparent"
+          style={{ transform: "rotate(12deg)" }} />
       </div>
 
-      {/* Corner crop marks */}
-      {[
-        { top: "5rem", left: "1.5rem" },
-        { top: "5rem", right: "1.5rem" },
-        { bottom: "2rem", left: "1.5rem" },
-        { bottom: "2rem", right: "1.5rem" },
-      ].map((pos, i) => (
-        <motion.div
-          key={i}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.4, duration: 0.4 }}
-          style={{
-            position: "absolute", ...pos,
-            width: "20px", height: "20px",
-            borderTop: i < 2 ? `1px solid ${GOLD}40` : "none",
-            borderBottom: i >= 2 ? `1px solid ${GOLD}40` : "none",
-            borderLeft: i % 2 === 0 ? `1px solid ${GOLD}40` : "none",
-            borderRight: i % 2 === 1 ? `1px solid ${GOLD}40` : "none",
-            zIndex: 10,
-          }}
-        />
-      ))}
+
+      <div className={`relative z-20 max-w-6xl mx-auto px-6 w-full grid gap-16 items-center py-32 min-h-screen ${data?.heroImageBase64 ? "grid-cols-1 md:grid-cols-2" : "grid-cols-1 max-w-3xl"}`}>
+
+        {/* Left: content */}
+        <div className={`order-2 md:order-1 ${!data?.heroImageBase64 ? "flex flex-col items-center text-center" : ""}`}>
+
+          {/* Status badge */}
+          <motion.div
+            initial={{ opacity: 0, x: -24 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center gap-3 mb-8"
+          >
+            <span className="block w-2 h-2 rounded-full bg-blue-400 shadow-[0_0_8px_rgba(59,130,246,0.9)]" />
+            <span className="text-[10px] font-black tracking-[0.4em] uppercase text-blue-400/80">{data?.title}</span>
+          </motion.div>
+
+          {/* Name — character-by-character reveal */}
+          <div className="mb-8">
+            {/* First name */}
+            <div className={`flex flex-wrap overflow-hidden ${!data?.heroImageBase64 ? "justify-center" : ""}`}>
+              {firstName.split("").map((char, i) => (
+                <motion.span
+                  key={`fn-${i}`}
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.45, delay: 0.25 + i * 0.045, ease: [0.22, 1, 0.36, 1] }}
+                  className="text-6xl sm:text-[5.5rem] font-black tracking-tighter text-white leading-none"
+                  style={{ display: "inline-block" }}
+                >
+                  {char}
+                </motion.span>
+              ))}
+            </div>
+            {/* Last name in electric blue */}
+            <div className={`flex flex-wrap overflow-hidden mt-1 ${!data?.heroImageBase64 ? "justify-center" : ""}`}>
+              {lastName.split("").map((char, i) => (
+                <motion.span
+                  key={`ln-${i}`}
+                  initial={{ y: "100%", opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ duration: 0.45, delay: 0.45 + i * 0.045, ease: [0.22, 1, 0.36, 1] }}
+                  className="text-6xl sm:text-[5.5rem] font-black tracking-tighter leading-none"
+                  style={{
+                    display: "inline-block",
+                    background: "linear-gradient(135deg, #60a5fa 0%, #3b82f6 50%, #1d4ed8 100%)",
+                    WebkitBackgroundClip: "text",
+                    WebkitTextFillColor: "transparent",
+                    backgroundClip: "text",
+                  }}
+                >
+                  {char === " " ? "\u00A0" : char}
+                </motion.span>
+              ))}
+            </div>
+          </div>
+
+          {/* Slogan */}
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.9 }}
+            className="text-white/35 text-sm leading-relaxed max-w-sm mb-10"
+          >
+            {data?.sloganHeroSection}
+          </motion.p>
+
+          {/* CTAs */}
+          <motion.div
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 1.1 }}
+            className={`flex flex-wrap gap-4 mb-12 ${!data?.heroImageBase64 ? "justify-center" : ""}`}
+          >
+            {data?.resumeBase64 && (
+              <motion.a
+                whileHover={{ scale: 1.03, boxShadow: "0 0 35px rgba(59,130,246,0.45)" }}
+                whileTap={{ scale: 0.97 }}
+                href={`data:application/pdf;base64,${data.resumeBase64}`}
+                download={`${data.name || "Resume"}.pdf`}
+                className="group relative flex items-center gap-2.5 px-7 py-3.5 bg-blue-600 text-white text-xs font-black rounded-sm uppercase tracking-[0.15em] overflow-hidden transition-all shadow-lg shadow-blue-600/20"
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-blue-500 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                <FaDownload className="w-3.5 h-3.5 relative z-10" />
+                <span className="relative z-10">Resume</span>
+              </motion.a>
+            )}
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={scrollToContact}
+              className="flex items-center gap-2.5 px-7 py-3.5 border border-blue-500/30 text-white/60 text-xs font-black rounded-sm hover:border-blue-400/60 hover:text-white/90 transition-all uppercase tracking-[0.15em]"
+            >
+              <FaEnvelope className="w-3.5 h-3.5 text-blue-400" />
+              Contact
+            </motion.button>
+          </motion.div>
+
+          {/* Stats */}
+          {stats.length > 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.6, delay: 1.4 }}
+              className={`flex items-center gap-10 pt-8 border-t border-white/[0.06] ${!data?.heroImageBase64 ? "justify-center" : ""}`}
+            >
+              {stats.map((stat, i) => (
+                <div key={i}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 1.5 + i * 0.1 }}
+                    className="text-3xl font-black text-blue-400 tabular-nums"
+                  >
+                    {String(stat.value).padStart(2, "0")}
+                  </motion.div>
+                  <div className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/25 mt-0.5">{stat.label}</div>
+                </div>
+              ))}
+            </motion.div>
+          )}
+        </div>
+
+        {/* Right: Diamond photo */}
+        <div className="order-1 md:order-2 flex justify-center items-center">
+          {data?.heroImageBase64 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.75, rotate: 5 }}
+              animate={{ opacity: 1, scale: 1, rotate: 0 }}
+              transition={{ duration: 0.9, delay: 0.2, type: "spring", stiffness: 70, damping: 14 }}
+              className="relative w-60 h-60 sm:w-80 sm:h-80"
+            >
+              {/* Glow behind diamond */}
+              <div
+                className="absolute inset-0 scale-110 bg-blue-500/20 blur-2xl"
+                style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+              />
+
+              {/* Outer ring */}
+              <div
+                className="absolute -inset-5 border border-dashed border-blue-500/20"
+                style={{ clipPath: "polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)" }}
+              />
+
+              {/* Cardinal corner dots */}
+              {[
+                { top: 0, left: "50%", transform: "translateX(-50%)" },
+                { bottom: 0, left: "50%", transform: "translateX(-50%)" },
+                { left: 0, top: "50%", transform: "translateY(-50%)" },
+                { right: 0, top: "50%", transform: "translateY(-50%)" },
+              ].map((style, i) => (
+                <div
+                  key={i}
+                  className="absolute w-3 h-3 rounded-full bg-blue-400 shadow-[0_0_12px_rgba(59,130,246,0.9)] z-20"
+                  style={style}
+                />
+              ))}
+
+              {/* Square photo frame border */}
+              <div className="absolute inset-4 border border-blue-500/40 z-10 pointer-events-none" />
+
+              {/* Photo */}
+              <div className="absolute inset-4 overflow-hidden">
+                <img
+                  src={data.heroImageBase64}
+                  alt={data.name}
+                  className="w-full h-full object-cover object-top"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-900/30 to-transparent" />
+              </div>
+            </motion.div>
+          ) : null}
+        </div>
+      </div>
 
       {/* Scroll cue */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.5 }}
-        style={{
-          position: "absolute", bottom: "2.5rem", left: "50%",
-          transform: "translateX(-50%)",
-          display: "flex", flexDirection: "column", alignItems: "center", gap: "8px",
-          cursor: "pointer", zIndex: 10,
-        }}
-        onClick={() => scrollTo("about")}
+        transition={{ delay: 2.2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex flex-col items-center gap-2"
       >
-        <span style={{ fontSize: "8.5px", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(200,148,58,0.4)" }}>Scroll</span>
-        <div style={{ width: "1px", height: "28px", background: `linear-gradient(to bottom, ${GOLD}50, transparent)` }} />
+        <FaChevronDown className="w-3.5 h-3.5 text-blue-400/35" />
       </motion.div>
     </section>
   );
