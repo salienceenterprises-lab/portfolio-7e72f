@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FaUser } from "react-icons/fa";
 
 export default function PortfolioAbout({ data }) {
+  if (!data) return null;
   const topSkills = data?.skills?.slice(0, 8) || [];
 
   return (
